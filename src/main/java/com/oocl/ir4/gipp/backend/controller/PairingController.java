@@ -1,29 +1,39 @@
 package com.oocl.ir4.gipp.backend.controller;
 
-import com.oocl.ir4.gipp.backend.DatabaseConnection;
-import com.oocl.ir4.gipp.backend.dto.PairingDTO;
-import com.oocl.ir4.gipp.backend.transaction.PairingTransaction;
+import com.oocl.ir4.gipp.backend.Repository.PairingRepository;
+import com.oocl.ir4.gipp.backend.model.PairingModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.net.URI;
 import java.net.URISyntaxException;
 
-@RestController
+@Controller
+@RequestMapping(path="/api/pairings")
+@CrossOrigin(origins = "*")
 public class PairingController {
+    @Autowired
+    private PairingRepository pairingRepository;
 
-//    @PostMapping("/group")
-//    ResponseEntity<PairingDTO> createGroup(@Valid @RequestBody PairingDTO pairingDTO) throws URISyntaxException {
-//        log.info("Request to create group: {}", group);
-//        Group result = groupRepository.save(group);
-//        return ResponseEntity.created(new URI("/api/group/" + result.getId()))
-//                .body(result);
+//    @GetMapping(path="/addPair")
+//    public @ResponseBody String addNewPair (@RequestParam String name, @RequestParam String name1, @RequestParam Integer pairCount) {
+//        PairingModel pairingModel = new PairingModel();
+//        pairingModel.setName(name);
+//        pairingModel.setName1(name1);
+//        pairingModel.setPairCount(pairCount);
+//
+//        pairingRepository.save(pairingModel);
+//
+//        return "Saved";
 //    }
 
-    @RequestMapping(value = "/api/pairingsave", method = RequestMethod.GET, params = { "jsonString" })
-    @CrossOrigin(origins = "*")
-    public String savePairing(@RequestParam("jsonString") String json) {
-        PairingTransaction result = new PairingTransaction();
-        result.execute();
-        return result.getResult();
+    @PostMapping(path="/addNewPair")
+    ResponseEntity<PairingModel> addNewPair(@RequestBody PairingModel pairingModel) throws URISyntaxException {
+        PairingModel result = pairingRepository.save(pairingModel);
+
+        return ResponseEntity.created(new URI("/api/group/" + result.getId()))
+                .body(result);
     }
 }
